@@ -32,6 +32,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use('/auth', require("../api/routes/auth.routes"))
+app.use('/personal', require("../api/routes/personal.routes"))
 
 app.listen(PORT, () => {
   console.log(`Server listening on port: ${PORT}`);
