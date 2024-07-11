@@ -1,6 +1,9 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-import { getAuth, createUserWithEmailAndPassword, sendEmailVerification} from "firebase/auth";
+import { getAuth, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification} from "firebase/auth";
+import admin from "firebase-admin";
+
+const serviceAccount = require("../admin-credentials.json");
 
 const firebaseConfig = {
     apiKey: process.env.API_KEY,
@@ -14,4 +17,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-export { app, db, getAuth, createUserWithEmailAndPassword, sendEmailVerification };
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
+export { app, admin, db, getAuth, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification};
