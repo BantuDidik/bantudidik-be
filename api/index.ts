@@ -1,5 +1,7 @@
 require("dotenv").config();
-import express, { query } from "express";
+import express from "express";
+import cookieParser from 'cookie-parser';
+
 import cors from "cors";
 
 const PORT: string = process.env.PORT!;
@@ -25,9 +27,11 @@ const corsOptions: cors.CorsOptions = {
       callback(new Error("Not allowed by CORS"));
     }
   },
+  credentials: true
 };
 
 app.use(cors(corsOptions));
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
