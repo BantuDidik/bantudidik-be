@@ -31,9 +31,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.get('/', (req, res) => {
-  res.send('Garuda Hacks 5.0');
-});
+app.use('/auth', require("../api/routes/auth.routes"))
 
 app.listen(PORT, () => {
   console.log(`Server listening on port: ${PORT}`);
