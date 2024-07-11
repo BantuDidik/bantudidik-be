@@ -1,0 +1,24 @@
+{
+  "name": "bantudidik-be",
+  "version": "1.0.0",
+  "description": "BantuDidik Backend Repository",
+  "main": "index.js",
+  "scripts": {
+    "start"  : "ts-node --transpile-only api/index.ts",
+	"dev" : "ts-node-dev api/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.10",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.5.3"
+  }
+}
