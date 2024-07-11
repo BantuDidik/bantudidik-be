@@ -6,11 +6,11 @@ const get = async (req : Request, res: Response) => {
     const idUser = req.params.idUser;
 
     try {
-        const userRef = doc(db, "personals", idUser);
-        const userSnapshot = await getDoc(userRef);
+        const personalRef = doc(db, "personals", idUser);
+        const personalSnapshot = await getDoc(personalRef);
         
-        if (userSnapshot.exists()) {
-            const data = userSnapshot.data()
+        if (personalSnapshot.exists()) {
+            const data = personalSnapshot.data()
             const result = 
             {
                 name: data.name,
@@ -28,7 +28,6 @@ const get = async (req : Request, res: Response) => {
         res.status(500).json({ message: "Error fetching personal info", error: error.message });
     }
 }
-
 
 const create = async (req : Request, res: Response) => {
     try {

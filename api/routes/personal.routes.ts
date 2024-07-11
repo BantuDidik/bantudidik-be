@@ -4,7 +4,7 @@ import express from "express";
 
 const router = express.Router();
 
-router.get("/:idUser", verifyToken, get);
 router.post("/create", verifyToken, create);
+router.get("/:idUser", verifyToken, get);
 
 module.exports = router;
