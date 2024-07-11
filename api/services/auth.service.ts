@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
-import { getAuth, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from '../../config/db';
+import { db, getAuth, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from '../../config/db';
+import { collection, doc, getDocs, query, setDoc, where } from "firebase/firestore";
 
 const auth = getAuth();
 
@@ -15,6 +16,7 @@ const login = (req : Request, res: Response) => {
 
     signInWithEmailAndPassword(auth, email, password)
         .then(async (userCredential : any) => { 
+            const idUser = userCredential.user.uid
             const idToken = userCredential._tokenResponse.idToken
             const isVerified = userCredential.user.emailVerified
 
@@ -24,6 +26,19 @@ const login = (req : Request, res: Response) => {
             }
 
             if (idToken) {
+                
+                const usersRef = collection(db, "users");
+                const q = query(usersRef, where("email", "==", email));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    await setDoc(doc(db, "users", idUser), {
+                        email: email,
+                        password: password,
+                        createdAt: new Date(),
+                    });
+                }
+
                 res.cookie('access_token', idToken, {
                     httpOnly: true
                 });
