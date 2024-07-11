@@ -4,7 +4,7 @@
   "description": "BantuDidik Backend Repository",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node --transpile-only api/index.ts",
+    "start": "ts-node config/admin.ts && ts-node --transpile-only api/index.ts",
     "dev": "ts-node-dev api/index.ts"
   },
   "keywords": [],
