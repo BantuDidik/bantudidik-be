@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
-import { db, getAuth, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from '../../config/db';
-import { addDoc, collection, doc, getDocs, query, setDoc, Timestamp, where } from "firebase/firestore";
+import { db } from '../../config/db';
+import { addDoc, collection, getDocs, query, Timestamp, where } from "firebase/firestore";
 
 const create = async (req : Request, res: Response) => {
     try {
