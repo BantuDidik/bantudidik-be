@@ -129,4 +129,14 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+# etc
 .DS_Store
+admin-credentials.json
+
+# AI training file
+CV1.pdf
+CV2.pdf
+CV3.pdf
+motlet1.pdf
+motlet2.pdf
+motlet3.pdf

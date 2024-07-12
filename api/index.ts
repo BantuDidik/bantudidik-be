@@ -1,5 +1,7 @@
 require("dotenv").config();
 import express from "express";
+import cookieParser from 'cookie-parser';
+
 import cors from "cors";
 
 const PORT: string = process.env.PORT!;
@@ -25,15 +27,22 @@ const corsOptions: cors.CorsOptions = {
       callback(new Error("Not allowed by CORS"));
     }
   },
+  credentials: true
 };
 
 app.use(cors(corsOptions));
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.get('/', (req, res) => {
-  res.send('Garuda Hacks 5.0');
-});
+app.use('/auth', require("../api/routes/auth.routes"))
+app.use('/personal', require("../api/routes/personal.routes"))
+app.use('/funding', require("../api/routes/funding.routes"))
+app.use('/application', require("../api/routes/application.routes"))
+app.use('/notification', require("../api/routes/notification.routes"))
+app.use('/appreciation', require("../api/routes/appreciation.routes"))
+
+app.use('/screening', require("../api/routes/ai.screening.routes"))
 
 app.listen(PORT, () => {
   console.log(`Server listening on port: ${PORT}`);
