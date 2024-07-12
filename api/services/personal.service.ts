@@ -33,13 +33,14 @@ const get = async (req : Request, res: Response) => {
 
 const create = async (req : Request, res: Response) => {
     try {
-        const { idUser, name, phoneNumber, birthDate, occupation } = req.body;
+        const { idUser, name, phoneNumber, birthDate, occupation, location} = req.body;
 
         await setDoc(doc(db, "personals", idUser), {
-            name: name,
-            phoneNumber: phoneNumber,
+            name,
+            phoneNumber,
+            occupation,
+            location,
             birthDate: new Date(birthDate),
-            occupation: occupation,
             createdAt: Timestamp.now(),
         });
 
