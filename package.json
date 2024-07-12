@@ -11,13 +11,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google/generative-ai": "^0.14.1",
     "@types/cors": "^2.8.17",
+    "axios": "^1.7.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "firebase": "^10.12.3",
-    "firebase-admin": "^12.2.0"
+    "firebase-admin": "^12.2.0",
+    "pdf-ts": "^0.0.2"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.7",
