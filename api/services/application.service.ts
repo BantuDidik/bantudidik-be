@@ -1,7 +1,6 @@
 import { Request, Response } from "express"
-import { Timestamp, addDoc, collection, doc, getDoc, getDocs, orderBy, query, updateDoc, where } from "firebase/firestore";
+import { Timestamp, addDoc, collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { db } from "../../config/db"
-import { describe } from "node:test";
 
 const get = async (req : Request, res: Response) => {
 
@@ -35,8 +34,8 @@ const get = async (req : Request, res: Response) => {
 
 const list = async (req: Request, res: Response) => {
     try {
-        const user = Number(req.query.user);
-        const funding = Number(req.query.funding);
+        const user = req.query.user;
+        const funding = req.query.funding;
 
         const fundingRef = collection(db, 'applications');
 
@@ -116,7 +115,9 @@ const accept = async (req: Request, res: Response) => {
         
         await addDoc(notificationCollection , {
             idUser : idUser,
-            message : "kamu berhasil mendapatkan funding!"
+            message : "kamu berhasil mendapatkan funding!",
+            link: "",
+            createdAt: Timestamp.now()
         });
 
         res.status(200).json({ message: "Application accepted successfully" });
