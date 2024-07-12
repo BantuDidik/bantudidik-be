@@ -71,6 +71,7 @@ const list = async (req: Request, res: Response) => {
                 q = query(q, where(documentId(), "in", fundingList));
             } else {
                 res.status(200).json({message: "no result"});
+                return;
             }
         }
 
