@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { Timestamp, addDoc, collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import { Timestamp, addDoc, collection, doc, getDoc, getDocs, increment, query, updateDoc, where } from "firebase/firestore";
 import { db } from "../../config/db"
 import { Application } from "../interfaces/application.interface";
 
@@ -84,6 +84,12 @@ const create = async (req: Request, res: Response) => {
             status: status,
             createdAt: Timestamp.now(),
             requirements: requirements,
+        });
+
+        const docRef = doc(db, 'fundings', offerId);
+
+        await updateDoc(docRef, {
+            applicants : increment(1)
         });
 
         res.status(200).json({ message: "Application added successfully" });
