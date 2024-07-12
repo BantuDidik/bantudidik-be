@@ -4,6 +4,7 @@ import { collection, doc, getDocs, query, setDoc, where } from "firebase/firesto
 import { User } from "../interfaces/user.interface";
 
 const auth = getAuth();
+const PROD = process.env.PROD_CLIENT_URL
 
 const login = (req : Request, res: Response) => {
     const { email, password } = req.body;
@@ -45,7 +46,7 @@ const login = (req : Request, res: Response) => {
 
                 res.cookie('access_token', idToken, {
                     httpOnly: true,
-                    secure: true,
+                    secure: PROD ? true : false,
                     sameSite: 'none'
                   });
                   
