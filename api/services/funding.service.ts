@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
 import { Timestamp, addDoc, collection, doc, getDoc, getDocs, orderBy, query, where, documentId } from "firebase/firestore";
 import { db } from "../../config/db"
+import { Funding } from "../interfaces/funding.interface";
 
 const get = async (req : Request, res: Response) => {
 
@@ -12,7 +13,7 @@ const get = async (req : Request, res: Response) => {
         
         if (fundingSnapshot.exists()) {
             const data = fundingSnapshot.data()
-            const result = 
+            const result : Funding = 
             {
                 id: fundingSnapshot.id,
                 title: data.title,
@@ -83,7 +84,7 @@ const list = async (req: Request, res: Response) => {
 
         const fundingSnapshot = await getDocs(q);
 
-        const result = fundingSnapshot.docs.map((data) => {
+        const result : Funding [] = fundingSnapshot.docs.map((data) => {
             const docData = data.data();
             return {
                 id: data.id,

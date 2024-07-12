@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
 import { db } from '../../config/db';
 import { collection, getDocs, query, where } from "firebase/firestore";
+import { Notification } from "../interfaces/notification.interface"
 
 const list = async (req: Request, res: Response) => {
     try {
@@ -12,7 +13,7 @@ const list = async (req: Request, res: Response) => {
 
         const fundingSnapshot = await getDocs(q);
 
-        const result = fundingSnapshot.docs.map((data) => {
+        const result : Notification[] = fundingSnapshot.docs.map((data) => {
             const docData = data.data();
             return {
                 id: data.id,

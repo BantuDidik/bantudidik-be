@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import { Timestamp, doc, getDoc, setDoc } from "firebase/firestore";
+import { Personal } from "../interfaces/personal.interface"
 import { db } from "../../config/db"
 
 const get = async (req : Request, res: Response) => {
@@ -11,7 +12,7 @@ const get = async (req : Request, res: Response) => {
         
         if (personalSnapshot.exists()) {
             const data = personalSnapshot.data()
-            const result = 
+            const result : Personal = 
             {
                 id: personalSnapshot.id,
                 name: data.name,

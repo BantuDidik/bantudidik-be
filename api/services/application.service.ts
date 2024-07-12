@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
 import { Timestamp, addDoc, collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { db } from "../../config/db"
+import { Application } from "../interfaces/application.interface";
 
 const get = async (req : Request, res: Response) => {
 
@@ -12,7 +13,7 @@ const get = async (req : Request, res: Response) => {
         
         if (applicationSnapshot.exists()) {
             const data = applicationSnapshot.data()
-            const result = 
+            const result : Application = 
             {
                 id : applicationSnapshot.id,
                 offerId: data.offerId,
@@ -51,7 +52,7 @@ const list = async (req: Request, res: Response) => {
 
         const fundingSnapshot = await getDocs(q);
 
-        const result = fundingSnapshot.docs.map((data) => {
+        const result : Application [] = fundingSnapshot.docs.map((data) => {
             const docData = data.data();
             return {
                 id: data.id,

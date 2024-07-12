@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
 import { db, getAuth, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from '../../config/db';
 import { collection, doc, getDocs, query, setDoc, where } from "firebase/firestore";
+import { User } from "../interfaces/user.interface";
 
 const auth = getAuth();
 
@@ -32,11 +33,14 @@ const login = (req : Request, res: Response) => {
                 const querySnapshot = await getDocs(q);
 
                 if (querySnapshot.empty) {
-                    await setDoc(doc(db, "users", idUser), {
-                        email: email,
-                        password: password,
+
+                    const newUser: User = {
+                        email,
+                        password,
                         createdAt: new Date(),
-                    });
+                    };
+
+                    await setDoc(doc(db, "users", idUser), newUser);
                 }
 
                 res.cookie('access_token', idToken, {

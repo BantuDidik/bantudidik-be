@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
 import { db } from '../../config/db';
 import { addDoc, collection, getDocs, query, Timestamp, where } from "firebase/firestore";
+import { Appreciation } from "../interfaces/appreciation.interface";
 
 const create = async (req : Request, res: Response) => {
     try {
@@ -31,7 +32,7 @@ const list = async (req : Request, res: Response) => {
 
         const fundingSnapshot = await getDocs(q);
 
-        const result = fundingSnapshot.docs.map((data) => {
+        const result : Appreciation[] = fundingSnapshot.docs.map((data) => {
             const docData = data.data();
             return {
                 id: data.id,

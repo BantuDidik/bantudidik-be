@@ -1,10 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { admin } from "../../config/db";
-import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
-
-interface RequestIncludesUser extends Request{
-    user: DecodedIdToken
-}
+import { RequestIncludesUser } from "../interfaces/user.interface";
 
 const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
     const idToken = req.cookies.access_token;
