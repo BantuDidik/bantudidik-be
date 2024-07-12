@@ -40,6 +40,7 @@ app.use('/personal', require("../api/routes/personal.routes"))
 app.use('/funding', require("../api/routes/funding.routes"))
 app.use('/application', require("../api/routes/application.routes"))
 app.use('/notification', require("../api/routes/notification.routes"))
+app.use('/appreciation', require("../api/routes/appreciation.routes"))
 
 app.listen(PORT, () => {
   console.log(`Server listening on port: ${PORT}`);
