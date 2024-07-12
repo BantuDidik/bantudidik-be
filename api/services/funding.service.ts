@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { Timestamp, addDoc, collection, doc, getDoc, getDocs, orderBy, query, where } from "firebase/firestore";
+import { Timestamp, addDoc, collection, doc, getDoc, getDocs, orderBy, query, where, documentId } from "firebase/firestore";
 import { db } from "../../config/db"
 
 const get = async (req : Request, res: Response) => {
@@ -14,6 +14,7 @@ const get = async (req : Request, res: Response) => {
             const data = fundingSnapshot.data()
             const result = 
             {
+                id: fundingSnapshot.id,
                 title: data.title,
                 description: data.description,
                 type: data.type,
@@ -42,7 +43,7 @@ const get = async (req : Request, res: Response) => {
 
 const list = async (req: Request, res: Response) => {
     try {
-        const user = Number(req.query.user);
+        const user = req.query.user;
         const status = req.query.status;
         const jenis = req.query.jenis;
         const jenjang = req.query.jenjang;
@@ -52,12 +53,20 @@ const list = async (req: Request, res: Response) => {
 
         let q = query(fundingRef);
 
-        if (user) {
-            q = query(q, where("idUser", "==", user));
-        }
+        if (user && status) {   
+            const fundingList: string[] = []
+            const applicationRef = collection(db, 'applications');
 
-        if (status) { // TODO
-            q = query(q, where("status", "==", status));
+            let r = query(applicationRef, where("idUser", "==", user), where("status", "==", status));
+
+            const applicationSnapshot = await getDocs(r);
+
+            const result = applicationSnapshot.docs.map((data) => {
+                const docData = data.data();
+                fundingList.push(String(docData.offerId))               
+            });
+
+            q = query(q, where(documentId(), "in", fundingList));
         }
 
         if (jenis) {
@@ -77,6 +86,7 @@ const list = async (req: Request, res: Response) => {
         const result = fundingSnapshot.docs.map((data) => {
             const docData = data.data();
             return {
+                id: data.id,
                 title: docData.title,
                 description: docData.description,
                 type: docData.type,

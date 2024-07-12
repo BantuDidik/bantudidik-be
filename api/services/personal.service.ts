@@ -13,6 +13,7 @@ const get = async (req : Request, res: Response) => {
             const data = personalSnapshot.data()
             const result = 
             {
+                id: personalSnapshot.id,
                 name: data.name,
                 phoneNumber: data!.phoneNumber,
                 birthDate: new Date(data.birthDate.seconds*1000),

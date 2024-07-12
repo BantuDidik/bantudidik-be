@@ -38,6 +38,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/auth', require("../api/routes/auth.routes"))
 app.use('/personal', require("../api/routes/personal.routes"))
 app.use('/funding', require("../api/routes/funding.routes"))
+app.use('/application', require("../api/routes/application.routes"))
 
 app.listen(PORT, () => {
   console.log(`Server listening on port: ${PORT}`);
