@@ -66,8 +66,12 @@ const list = async (req: Request, res: Response) => {
                 const docData = data.data();
                 fundingList.push(String(docData.offerId))               
             });
-
-            q = query(q, where(documentId(), "in", fundingList));
+            
+            if (fundingList.length !== 0){
+                q = query(q, where(documentId(), "in", fundingList));
+            } else {
+                res.status(200).json({message: "no result"});
+            }
         }
 
         if (jenis) {
