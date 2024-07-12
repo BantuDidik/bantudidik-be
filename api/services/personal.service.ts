@@ -19,6 +19,7 @@ const get = async (req : Request, res: Response) => {
                 phoneNumber: data!.phoneNumber,
                 birthDate: new Date(data.birthDate.seconds*1000),
                 occupation: data.occupation,
+                location: data.location,
                 createdAt: new Date(data.createdAt.seconds*1000),
             }
             res.status(200).json(result);

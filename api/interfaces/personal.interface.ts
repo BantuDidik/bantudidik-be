@@ -5,6 +5,7 @@ interface Personal {
     birthDate: Date;
     occupation: string;
     createdAt: Date;
+    location: string
 }
 
 export { Personal }
