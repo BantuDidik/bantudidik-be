@@ -10,12 +10,6 @@ const app = express();
 
 const whitelist: string[] = [];
 
-const PROD = process.env.PROD_CLIENT_URL
-
-if (PROD) {
-    whitelist.push(PROD)
-}
-
 const corsOptions: cors.CorsOptions = {
   origin: function (
     origin: string | undefined,
