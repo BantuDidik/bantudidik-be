@@ -115,7 +115,7 @@ const list = async (req: Request, res: Response) => {
 const create = async (req: Request, res: Response) => {
     try {
         const { idUser, title, description, type, status, transferMethod, imageUrl, nominal, applicants, jenjang, isAnonymous, startDate, endDate, requirements } = req.body;
-
+                
         const fundingCollection = collection(db, "fundings")
         
         await addDoc(fundingCollection , {
