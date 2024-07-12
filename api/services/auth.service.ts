@@ -44,7 +44,6 @@ const login = (req : Request, res: Response) => {
                 }
 
                 res.cookie('access_token', idToken, {
-                    httpOnly: true,
                     secure: true,
                     sameSite: 'none'
                   });
