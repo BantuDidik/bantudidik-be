@@ -143,4 +143,22 @@ const create = async (req: Request, res: Response) => {
 
 }
 
-export { get, list, create } 
+const check = async (req: Request, res: Response) => {
+    const { idFunding, idUser } = req.body;
+
+    const applicationRef = collection(db, 'applications');
+
+    let r = query(applicationRef, where("idUser", "==", idUser), where("offerId", "==", idFunding));
+
+    const applicationSnapshot = await getDocs(r);
+
+    const fundingList = applicationSnapshot.docs
+
+    if (fundingList.length === 0) {
+        res.status(200).json({ isApplied: false });
+    } else {
+        res.status(200).json({ isApplied: true });
+    }
+}
+
+export { get, list, create, check } 
