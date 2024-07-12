@@ -100,37 +100,95 @@ const create = async (req: Request, res: Response) => {
     // increase funding applicants count
 }
 
-const accept = async (req: Request, res: Response) => {
+const pending = async (req: Request, res: Response) => {
     try {
-        const { idApplication } = req.body
+
+        const { idApplication, idFunding } = req.body
+
+        // Get funding title
+        let fundingTitle;
+        const fundingRef = doc(db, "fundings", idFunding);
+        const fundingSnapshot = await getDoc(fundingRef);
+        
+        if (fundingSnapshot.exists()) {
+            const data = fundingSnapshot.data()
+            fundingTitle = data.title
+        }
+
+        // Get idUser
         const docRef = doc(db, 'applications', idApplication);
-
-        const applicationSnapshot = await getDoc(docRef);
-
         await updateDoc(docRef, {
-            status : "Accepted"
+            status : "Pending"
         });
 
         let idUser;
-        
+        const applicationSnapshot = await getDoc(docRef);
         if (applicationSnapshot.exists()) {
             const data = applicationSnapshot.data()
             idUser = data.idUser
         }
 
+        // Send notification
         const notificationCollection = collection(db, "notifications")
         
         await addDoc(notificationCollection , {
             idUser : idUser,
-            message : "kamu berhasil mendapatkan funding!",
-            link: "",
+            message : `Selamat! Anda berhasil menerima bantuan ${fundingTitle}`,
+            link: "https://",
             createdAt: Timestamp.now()
         });
 
-        res.status(200).json({ message: "Application accepted successfully" });
+        res.status(200).json({ message: "Application pending" });
     } catch (error: any) {
         res.status(500).json({ message: "Error accepting application", error: error.message });
     }
 }
 
-export { get, list, create, accept } 
+const accept = async (req: Request, res: Response) => {
+    try {
+        const { idApplication, idFunding } = req.body
+
+        // Get funding title
+        let fundingTitle;
+        const fundingRef = doc(db, "fundings", idFunding);
+        const fundingSnapshot = await getDoc(fundingRef);
+        
+        if (fundingSnapshot.exists()) {
+            const data = fundingSnapshot.data()
+            fundingTitle = data.title
+        }
+
+        // Get idUser
+        const docRef = doc(db, 'applications', idApplication);
+        await updateDoc(docRef, {
+            status : "Accepted"
+        });
+
+        let idUser;
+        const applicationSnapshot = await getDoc(docRef);
+        if (applicationSnapshot.exists()) {
+            const data = applicationSnapshot.data()
+            idUser = data.idUser
+        }
+
+        // Send notification
+        const notificationCollection = collection(db, "notifications")
+        
+        await addDoc(notificationCollection , {
+            idUser : idUser,
+            message : `Funding ${fundingTitle} sudah mengirimkan bantuan ke rekening Anda. Apakah Anda sudah menerima?`,
+            link: "https://",
+            createdAt: Timestamp.now()
+        });
+
+        res.status(200).json({ message: "Application accepted" });
+    } catch (error: any) {
+        res.status(500).json({ message: "Error accepting application", error: error.message });
+    }
+}
+
+const complete = async (req: Request, res: Response) => {
+    
+}
+
+export { get, list, create, pending, accept, complete} 
