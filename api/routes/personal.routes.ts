@@ -5,6 +5,6 @@ import express from "express";
 const router = express.Router();
 
 router.post("/create", verifyToken, create);
-router.get("/:idUser", verifyToken, get);
+router.get("/:idUser", get);
 
 module.exports = router;
