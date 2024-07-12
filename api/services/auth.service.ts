@@ -47,7 +47,7 @@ const login = (req : Request, res: Response) => {
                 res.cookie('access_token', idToken, {
                     httpOnly: true,
                     secure: PROD ? true : false,
-                    sameSite: 'none'
+                    // sameSite: 'none'
                   });
                   
                 res.status(200).json({ message: "User logged in successfully", userCredential });

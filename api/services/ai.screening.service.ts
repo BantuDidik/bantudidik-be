@@ -1,108 +1,97 @@
-import { Request, Response } from "express"
+import { Application, Request, Response } from "express"
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { pdfToText } from 'pdf-ts';
-import fs from 'fs'
 import axios from 'axios'
+import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
+import { db } from "../../config/db";
 
 const execute = async (req : Request, res: Response) => {
     try {
-        // const response1 = await axios.get("https://files.edgestore.dev/50ianbqbdkc74mtt/publicFiles/_public/76d7778b-646f-4ee9-a1dc-b8e8bd70f630.pdf", {
-        //     responseType: 'arraybuffer'
-        // });
+        const idFunding = req.params.idFunding;
 
-        // // Extract the PDF text
-        // const pdf = response1.data;
-        // const text1 = await pdfToText(pdf);
+        // Fetching Funding Attributes
+        let fundingTitle;
+        let fundingDescription
 
-        let text;
-        let pdfBuffer;
-        let motlet = []
-        let cv = []
-
-        const funding = {
-            title : 'Biaya SIMAK UI',
-            description : 'Hi disini saya kebetulan baru saja menerima gaji pertama saya. Disini saya ingin membagikan uang untuk keperluan pendaftaran apapun bagi yang membutuhkan, syaratnya bisa dilihat sendiri. Good luck, doakan saya rezekinya lancar aamiin:*  '
+        const fundingRef = doc(db, "fundings", idFunding);
+        const fundingSnapshot = await getDoc(fundingRef);
+        
+        if (fundingSnapshot.exists()) {
+            const data = fundingSnapshot.data()
+            fundingTitle = data.title
+            fundingDescription = data.description
         }
 
-        try {
-            pdfBuffer = await fs.promises.readFile('./motlet1.pdf');
-            text = await pdfToText(pdfBuffer);
-            motlet.push({
-                nama: 'Anisa Putri',
-                idUser: "111111",
-                motlet: text
-            })
+        // Fetching Applications
+        const applicationRef = collection(db, 'applications');
+        let q = query(applicationRef, where("offerId", "==", idFunding));
+        const applicationSnapshot = await getDocs(q);
 
-            pdfBuffer = await fs.promises.readFile('./motlet2.pdf');
-            text = await pdfToText(pdfBuffer);
-            motlet.push({
-                nama: 'Budi Santoso',
-                idUser: "222222",
-                motlet: text
-            })
+        let applications : any [] = []
 
-            pdfBuffer = await fs.promises.readFile('./motlet3.pdf');
-            text = await pdfToText(pdfBuffer);
-            motlet.push({
-                nama: 'Siti Nurhaliza',
-                idUser: "333333",
-                motlet: text
-            })
-        } catch (error) {
-            console.error('Error collecting motlet:', error);
-        }
+        applicationSnapshot.docs.forEach((data) => {
+            const docData = data.data();
 
-        try {
-            pdfBuffer = await fs.promises.readFile('./CV1.pdf');
-            text = await pdfToText(pdfBuffer);
-            cv.push({
-                nama: 'Anisa Putri',
-                idUser: "111111",
-                cv: text
-            })
+            applications.push({
+                id: data.id,
+                description: docData.description,
+                requirements: docData.requirements
+            });
+        });
 
-            pdfBuffer = await fs.promises.readFile('./CV2.pdf');
-            text = await pdfToText(pdfBuffer);
-            cv.push({
-                nama: 'Budi Santoso',
-                idUser: "222222",
-                cv: text
-            })
+        const processedApplications = await Promise.all(applications.map(async (applicant) => {
+            const id = applicant.id;
+            const description = applicant.description;
+            let cv = null;
+            let motivationLetter = null;
 
-            pdfBuffer = await fs.promises.readFile('./CV3.pdf');
-            text = await pdfToText(pdfBuffer);
-            cv.push({
-                nama: 'Siti Nurhaliza',
-                idUser: "333333",
-                cv: text
-            })
-        } catch (error) {
-            console.error('Error collecting motlet:', error);
-        }
+            if (applicant.requirements.cv !== null) {
+                const cvFile = await axios.get(applicant.requirements.cv, {
+                    responseType: 'arraybuffer'
+                });
 
-    
+                const pdf = cvFile.data;
+                cv = await pdfToText(pdf);
+            }
+
+            if (applicant.requirements.motivationLetter !== null) {
+                const motletFile = await axios.get(applicant.requirements.motivationLetter, {
+                    responseType: 'arraybuffer'
+                });
+
+                const pdf = motletFile.data;
+                motivationLetter = await pdfToText(pdf);
+            }
+
+            return {
+                id,
+                description,
+                motivationLetter,
+                cv
+            };
+        }));
+        
+        // The Gemini 1.5 models are versatile and work with both text-only and multimodal prompts
         const genAI = new GoogleGenerativeAI(process.env.AI_API_KEY!);
 
-        // The Gemini 1.5 models are versatile and work with both text-only and multimodal prompts
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
 
         const prompt = `
             Kamu adalah seorang Human Resource yang berpengalaman dalam screening dokumen kandidat seperti CV, motivation letter, dan lain-lain.
-            Ada open funding yang diadakan oleh orang yang sedang ingin berbagi, dan orang lain bisa apply ke open fundingnya.
-            Kamu ditugaskan untuk menseleksi CV dan motivation letter dari semua applicants yang mendaftar dan seleksi satu yang cocok dengan deskripsi open fundingnya.
-            Berikan output berupa json:
+            Terdapat open funding yang diadakan oleh orang yang sedang ingin berbagi, dan orang lain bisa apply ke open funding-nya.
+            Kamu ditugaskan untuk mennyeleksi CV dan motivation letter dari semua applicants yang mendaftar dan cari satu yang cocok dengan deskripsi open fundingnya.
+            Berikan output dengan format json berikut:
 
             {
-                nama: 'nama-yang-lolos',
-                idUSer: 'idUser-yang-lolos',
+                idApplication: 'idApplication-yang-lolos',
                 alasan: 'alasan-kenapa-dia-terpilih'
             }
 
-            berikut deskripsi funding:${JSON.stringify(funding)}
+            Judul funding : ${fundingTitle}
+            Deskripsi funding : ${fundingDescription}
 
-            berikut filenya:
-            - motivation letter: ${JSON.stringify(motlet)}
-            - cv: ${JSON.stringify(cv)}
+            Applicants:
+            ${JSON.stringify(processedApplications)}
         `
         const result = await model.generateContent(prompt);
         const response = await result.response;

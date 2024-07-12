@@ -4,6 +4,6 @@ import express from "express";
 
 const router = express.Router();
 
-router.post("/", verifyToken, execute);
+router.post("/:idFunding", verifyToken, execute);
 
 module.exports = router;
